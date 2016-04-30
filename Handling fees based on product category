@@ -1,0 +1,35 @@
+// Add Handling Fee to Product Categories
+function woo_add_cart_fee() {
+
+	$category_ID = "26";
+	$gcount = 0;
+	$acount = 0;
+	global $woocommerce;
+	
+
+	foreach ($woocommerce->cart->cart_contents as $key => $values ) {
+		
+		// Get the terms, i.e. category list using the ID of the product
+		$terms = get_the_terms( $values['product_id'], 'product_cat' );
+
+		// Because a product can have multiple categories, we need to iterate through the list of the products category for a match
+		foreach ($terms as $term) {
+		        // 22, 31, 46 categories for which we want to add the fee, not 26
+		        if($term->term_id != $category_ID){
+		         	$gcost = 18;
+		         	$gcount +=1;
+      			}
+      			else {
+      				$acost = 3;
+      				$acount +=1;
+      			}
+      			
+
+		}
+
+		
+	}
+	$woocommerce->cart->add_fee('Handling Fee', (($gcost * $gcount) + ($acost * $acount)), $taxable = false, $tax_class = '');
+}
+
+add_action( 'woocommerce_cart_calculate_fees', 'woo_add_cart_fee' );
